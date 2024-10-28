@@ -1,5 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-using GuestlineChallenge;
+﻿using GuestlineChallenge;
 using GuestlineChallenge.Models;
 using GuestlineChallenge.Services;
 using Microsoft.Extensions.DependencyInjection;

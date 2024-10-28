@@ -20,6 +20,7 @@ public class CommandLineOptions
 {
     [Option('h', "hotels",  Required = true, HelpText = "JSON filename that contains hotels details.")]
     public string HotelsFilePath { get; set; }
+    
     [Option('b', "bookings",  Required = true, HelpText = "JSON filename that contains list of bookings.")]
     public string BookingsFilePath { get; set; }
 }
