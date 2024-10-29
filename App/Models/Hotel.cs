@@ -2,8 +2,8 @@
 
 public class Hotel
 {
-    public string Id { get; private set; }
-    public string Name { get; private set; }
-    public IReadOnlyList<RoomType> RoomTypes { get; private set; }
-    public IReadOnlyCollection<Room> Rooms { get; private set; }
+    public string Id { get; init; }
+    public string Name { get; set; }
+    public IReadOnlyList<RoomType> RoomTypes { get; init; }
+    public IReadOnlyCollection<Room> Rooms { get; init; }
 }

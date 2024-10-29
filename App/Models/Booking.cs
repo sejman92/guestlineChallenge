@@ -1,10 +1,16 @@
-﻿namespace GuestlineChallenge.Models;
+﻿using System.Text.Json.Serialization;
+using GuestlineChallenge.Helpers;
+
+namespace GuestlineChallenge.Models;
 
 public class Booking
 {
-    public string HotelId { get; set; }
-    public DateTime Arrival { get; set; }
-    public DateTime Departure { get; set; }
-    public RoomType RoomType { get; set; }
-    public string RoomRate { get; set; }
+    public string HotelId { get; init; }
+    
+    [JsonConverter(typeof(DateTimeConverter))]
+    public DateTime Arrival { get; init; }
+    
+    [JsonConverter(typeof(DateTimeConverter))]
+    public DateTime Departure { get; init; }
+    public string RoomType { get; init; }
 }

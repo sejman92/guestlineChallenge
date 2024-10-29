@@ -16,8 +16,9 @@ public class HotelDataLoaderService : IDataLoaderService<Hotel>
     {
         _filePath = filePath;
     }
-    
-    public IEnumerable<Hotel> LoadData() => JsonSerializer.Deserialize<List<Hotel>>(File.ReadAllText(_filePath));
+
+    public IEnumerable<Hotel> LoadData() => JsonSerializer.Deserialize<List<Hotel>>(File.ReadAllText(_filePath),
+        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 }
 
 public class BookingDataLoaderService : IDataLoaderService<Booking>
@@ -29,5 +30,5 @@ public class BookingDataLoaderService : IDataLoaderService<Booking>
         _filePath = filePath;
     }
     
-    public IEnumerable<Booking> LoadData() => JsonSerializer.Deserialize<List<Booking>>(File.ReadAllText(_filePath));
+    public IEnumerable<Booking> LoadData() => JsonSerializer.Deserialize<List<Booking>>(File.ReadAllText(_filePath), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 }
