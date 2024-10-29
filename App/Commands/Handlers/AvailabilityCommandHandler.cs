@@ -13,7 +13,7 @@ public class AvailabilityCommandHandler : ICommandHandler<AvailabilityCommand>
 
     public void Handle(AvailabilityCommand command)
     {
-        var availability = _reservationService.GetAvailability(command.HotelId, command.StartDate, command.EndDate, command.RoomTypeCode);
-        Console.WriteLine($"Availability for {command.HotelId} for specified time range is: {availability}");
+        var availability = _reservationService.GetNumberOfAvailableRooms(command.HotelId, command.StartDate, command.EndDate, command.RoomTypeCode);
+        Console.WriteLine($"{availability}");
     }
 }

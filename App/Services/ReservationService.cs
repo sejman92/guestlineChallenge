@@ -7,8 +7,8 @@ namespace GuestlineChallenge.Services;
 
 public interface IReservationService
 {
-    int GetAvailability(string hotelId, StartDate startDate, EndDate endDate, string roomTypeCode);
-    List<string> GetRoomTypesForGuests(string hotelId, StartDate startDate, EndDate endDate, int guestCount);
+    int GetNumberOfAvailableRooms(string hotelId, StartDate startDate, EndDate endDate, string roomTypeCode);
+    List<string> GetRoomTypesNeededForGuestAllocation(string hotelId, StartDate startDate, EndDate endDate, int guestCount);
 }
 
 public class ReservationService : IReservationService
@@ -22,27 +22,80 @@ public class ReservationService : IReservationService
         _bookings = bookingDataLoaderService.LoadData();
     }
 
-    public int GetAvailability(string hotelId, StartDate startDate, EndDate endDate, string roomType)
+    public int GetNumberOfAvailableRooms(string hotelId, StartDate startDate, EndDate endDate, string roomType)
     {
-        var allFilteredRooms = 0;
-        var hotel = GetHotel(hotelId);
+        var result = new List<Room>();
+        var hotelRooms = GetHotelRooms(hotelId);
         
-        if (hotel.Rooms != null)
-        {
-            allFilteredRooms = hotel.Rooms.FilterByRoomType(roomType).Count();
-        }
+        result = hotelRooms.FilterByRoomType(roomType).ToList();
 
-        var totalBookings = GetTotalBookings(hotelId, roomType, startDate, endDate);
-
-        return allFilteredRooms - totalBookings;
+        var bookedRoomsForGivenHotelAndRoomTypeAndDateRange = _bookings
+            .FilterByHotelId(hotelId)
+            .FilterByRoomType(roomType)
+            .FilterByDateRange(startDate, endDate);
+        
+        return result.Count - bookedRoomsForGivenHotelAndRoomTypeAndDateRange.Count();
     }
     
-    public List<string> GetRoomTypesForGuests(string hotelId, StartDate startDate, EndDate endDate, int guestCount)
+    public List<string> GetRoomTypesNeededForGuestAllocation(string hotelId, StartDate startDate, EndDate endDate, int guestCount)
     {
-        throw new NotImplementedException();
+        var result = new List<string>();
+        var hotelRooms = GetHotelRooms(hotelId);
+        var availableRooms = hotelRooms.GetAvailableRooms(_bookings.FilterByHotelId(hotelId), startDate, endDate);
+
+        while (guestCount > 0)
+        {
+            var neededRoom = guestCount > 1 ? GlobalSettings.DoubleRoomTypeCode : GlobalSettings.SingleRoomTypeCode;
+
+            var isRoomAvailable = availableRooms.Any(r => r.RoomType == neededRoom);
+
+            switch (neededRoom)
+            {
+                case "DBL":
+                    if (isRoomAvailable) // 2 persons can be allocated in a double room
+                    {
+                        result.Add(GlobalSettings.DoubleRoomTypeCode);
+                        availableRooms = availableRooms.RemoveByRoomType(GlobalSettings.DoubleRoomTypeCode);
+                        guestCount -= 2;
+                    }
+                    else //try allocate single room for 1 person
+                    {
+                        if (availableRooms.Any(r => r.RoomType == GlobalSettings.SingleRoomTypeCode))
+                        {
+                            result.Add(GlobalSettings.SingleRoomTypeCode);
+                            availableRooms = availableRooms.RemoveByRoomType(GlobalSettings.SingleRoomTypeCode);
+                            guestCount--;
+                        }
+                        else throw new Exception("Allocation is not possible");
+                    }
+                    break;
+                case "SGL":
+                    if (isRoomAvailable) // 1 person can be allocated in a single room
+                    {
+                        result.Add(GlobalSettings.SingleRoomTypeCode);
+                        availableRooms = availableRooms.RemoveByRoomType(GlobalSettings.SingleRoomTypeCode);
+                        guestCount--;
+                    }
+                    else // try allocate double room for 1 person
+                    {
+                        if (availableRooms.Any(r => r.RoomType == GlobalSettings.DoubleRoomTypeCode)) 
+                        {
+                            result.Add(GlobalSettings.PartiallyFilledDoubleRoomTypeCode);
+                            availableRooms = availableRooms.RemoveByRoomType(GlobalSettings.DoubleRoomTypeCode);
+                            guestCount--; 
+                        }
+                        else throw new Exception("Allocation is not possible");
+                    }
+                    break;
+                default:
+                    throw new Exception("Unsupported room type!");
+            }
+        }
+        
+        return result;
     }
 
-    private Hotel GetHotel(string hotelId)
+    private IEnumerable<Room> GetHotelRooms(string hotelId)
     {
         var hotel = _hotels.FirstOrDefault(h => h.Id == hotelId);
 
@@ -51,15 +104,6 @@ public class ReservationService : IReservationService
             throw new NotFoundException($"Hotel with id {hotelId} not found");
         }
 
-        return hotel;
-    }
-
-    private int GetTotalBookings(string hotelId, string roomTypeCode, StartDate startDate, EndDate endDate)
-    {
-        return _bookings
-            .FilterByHotelId(hotelId)
-            .FilterByRoomType(roomTypeCode)
-            .FilterByDateRange(startDate, endDate)
-            .Count();
+        return hotel.Rooms;
     }
 }

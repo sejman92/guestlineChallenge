@@ -18,6 +18,7 @@ var serviceProvider = new ServiceCollection()
             return new ReservationService(hotelDataLoaderService, bookingDataLoaderService);
         })
     .AddSingleton<ICommandHandler<AvailabilityCommand>, AvailabilityCommandHandler>()
+    .AddSingleton<ICommandHandler<RoomTypesCommand>, RoomTypesCommandHandler>()
     .AddSingleton<ICommandProcessor, CommandProcessor>()
     .BuildServiceProvider();
 
