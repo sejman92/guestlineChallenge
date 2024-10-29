@@ -45,7 +45,7 @@ public class ReservationService : IReservationService
 
         while (guestCount > 0)
         {
-            var neededRoom = guestCount > 1 ? GlobalSettings.DoubleRoomTypeCode : GlobalSettings.SingleRoomTypeCode;
+            var neededRoom = guestCount > 1 ? Consts.DoubleRoomTypeCode : Consts.SingleRoomTypeCode;
 
             var isRoomAvailable = availableRooms.Any(r => r.RoomType == neededRoom);
 
@@ -54,16 +54,16 @@ public class ReservationService : IReservationService
                 case "DBL":
                     if (isRoomAvailable) // 2 persons can be allocated in a double room
                     {
-                        result.Add(GlobalSettings.DoubleRoomTypeCode);
-                        availableRooms = availableRooms.RemoveByRoomType(GlobalSettings.DoubleRoomTypeCode);
+                        result.Add(Consts.DoubleRoomTypeCode);
+                        availableRooms = availableRooms.RemoveByRoomType(Consts.DoubleRoomTypeCode);
                         guestCount -= 2;
                     }
                     else //try allocate single room for 1 person
                     {
-                        if (availableRooms.Any(r => r.RoomType == GlobalSettings.SingleRoomTypeCode))
+                        if (availableRooms.Any(r => r.RoomType == Consts.SingleRoomTypeCode))
                         {
-                            result.Add(GlobalSettings.SingleRoomTypeCode);
-                            availableRooms = availableRooms.RemoveByRoomType(GlobalSettings.SingleRoomTypeCode);
+                            result.Add(Consts.SingleRoomTypeCode);
+                            availableRooms = availableRooms.RemoveByRoomType(Consts.SingleRoomTypeCode);
                             guestCount--;
                         }
                         else throw new Exception("Allocation is not possible");
@@ -72,16 +72,16 @@ public class ReservationService : IReservationService
                 case "SGL":
                     if (isRoomAvailable) // 1 person can be allocated in a single room
                     {
-                        result.Add(GlobalSettings.SingleRoomTypeCode);
-                        availableRooms = availableRooms.RemoveByRoomType(GlobalSettings.SingleRoomTypeCode);
+                        result.Add(Consts.SingleRoomTypeCode);
+                        availableRooms = availableRooms.RemoveByRoomType(Consts.SingleRoomTypeCode);
                         guestCount--;
                     }
                     else // try allocate double room for 1 person
                     {
-                        if (availableRooms.Any(r => r.RoomType == GlobalSettings.DoubleRoomTypeCode)) 
+                        if (availableRooms.Any(r => r.RoomType == Consts.DoubleRoomTypeCode)) 
                         {
-                            result.Add(GlobalSettings.PartiallyFilledDoubleRoomTypeCode);
-                            availableRooms = availableRooms.RemoveByRoomType(GlobalSettings.DoubleRoomTypeCode);
+                            result.Add(Consts.PartiallyFilledDoubleRoomTypeCode);
+                            availableRooms = availableRooms.RemoveByRoomType(Consts.DoubleRoomTypeCode);
                             guestCount--; 
                         }
                         else throw new Exception("Allocation is not possible");

@@ -1,6 +1,6 @@
 ﻿namespace GuestlineChallenge.Helpers;
 
-public static class GlobalSettings
+public static class Consts
 {
     public const string DateFormat = "yyyyMMdd";
     public const string SingleRoomTypeCode = "SGL";
