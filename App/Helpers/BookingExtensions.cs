@@ -19,6 +19,6 @@ public static class BookingExtensions
     {
         return endDate.HasValue 
             ? bookings.Where(b => b.Arrival < endDate.Value && b.Departure > startDate.Value) 
-            : bookings.Where(b => b.Arrival <= startDate.Value && b.Departure >= startDate.Value);
+            : bookings.Where(b => b.Arrival <= startDate.Value && b.Departure > startDate.Value);
     }
 }
