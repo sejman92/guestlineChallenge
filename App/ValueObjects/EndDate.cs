@@ -16,7 +16,7 @@ public class EndDate : ValueObject
 
         if (!endDate.TryParse(out var result))
         {
-            throw new ArgumentException($"{nameof(endDate)} is not a valid date nor format");
+            throw new ArgumentException($"{nameof(EndDate)} is not a valid date nor format");
         }
 
         return new EndDate(result);

@@ -15,7 +15,7 @@ public class StartDate : ValueObject
 
         if (!startDate.TryParse(out var result))
         {
-            throw new ArgumentException($"{nameof(startDate)} is not a valid date nor format");
+            throw new ArgumentException($"{nameof(StartDate)} is not a valid date nor format");
         }
 
         return new StartDate(result);
