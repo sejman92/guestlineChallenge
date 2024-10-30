@@ -11,6 +11,9 @@ public interface ICommandProcessor
 
 public class CommandProcessor : ICommandProcessor
 {
+    private const string Invalid_Command_Format_Message = "Invalid command format";
+    private const string Unknown_Command_Format_Message = "Unknown command";
+    private const string Command_CannotBeNullOrEmpty = "Command cannot be null or empty";
     private readonly ICommandHandler<AvailabilityCommand> _availabilityCommandHandler;
     private readonly ICommandHandler<RoomTypesCommand> _roomTypesCommandHandler;
     
@@ -24,8 +27,7 @@ public class CommandProcessor : ICommandProcessor
     {
         if (string.IsNullOrWhiteSpace(command))
         {
-            Console.WriteLine("Command cannot be null or empty");
-            return;
+            throw new Exception(Command_CannotBeNullOrEmpty);
         }
 
         if (command.StartsWith("Availability"))
@@ -40,7 +42,7 @@ public class CommandProcessor : ICommandProcessor
             var (hotelId, startDate, endDate, guestCount) = ParseRoomTypesCommand(command);
             _roomTypesCommandHandler.Handle(RoomTypesCommand.Create(hotelId, startDate, endDate, guestCount));
         }
-        else Console.WriteLine("Unknown command");
+        else throw new Exception(Unknown_Command_Format_Message);
     }
 
     private static (string, string, string, string) ParseAvailabilityCommand(string command)
@@ -53,8 +55,7 @@ public class CommandProcessor : ICommandProcessor
             return (commandData[0].Trim(), dates[0].Trim(), dates.Length > 1 ? dates[1].Trim() : null, commandData[2].Trim());
         }
 
-        throw new Exception(
-            "Invalid command format.");
+        throw new Exception(Invalid_Command_Format_Message);
     }
     
     private static (string, string, string, int) ParseRoomTypesCommand(string command)
@@ -67,6 +68,6 @@ public class CommandProcessor : ICommandProcessor
             return (commandData[0].Trim(), dates[0].Trim(), dates.Length > 1 ? dates[1].Trim() : null, int.Parse(commandData[2].Trim()));
         }
 
-        throw new Exception("Invalid command format.");
+        throw new Exception(Invalid_Command_Format_Message);
     }
 }
